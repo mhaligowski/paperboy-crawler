@@ -1,8 +1,15 @@
 package main
 
-import "os"
+import (
+    "net/http"
+    "fmt"
+)
 
-func main() {
-    os.Exit(0)
+func handlePing(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprint(w, "OK")
+}
+
+func init() {
+    http.HandleFunc("/ping", handlePing)
 }
 
