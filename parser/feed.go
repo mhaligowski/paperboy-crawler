@@ -1,15 +1,20 @@
 package parser
 
-import "time"
+import (
+    "encoding/xml"
+    "time"
+)
 
 type Entry struct {
-    title string
+    Title string `xml:"title"`
 }
 
 type Feed struct {
-    id string
-    title string
-    updated time.Time
+    XMLName xml.Name `xml:"feed"`
 
-    entries []Entry
+    Id string `xml:"id"`
+    Title string `xml:"title"`
+    Updated time.Time `xml:"updated"`
+
+    Entries []Entry `xml:"Entry"`
 }

@@ -46,22 +46,37 @@ const feed = `
 </feed>
 `
 
-func TestInitial(t *testing.T) {
-    r := strings.NewReader("test")
-    v := ParseFeed(r)
-
-    if v == nil {
-        t.Error("Expected something, got nil")
-    }
-}
-
-
 func TestCanParseTitle(t *testing.T) {
     r:= strings.NewReader(feed)
-    v := ParseFeed(r)
+    v, e := ParseFeed(r)
 
-    if v.title != "dive into mark" {
-        t.Error("Expected \"dive into mark\", got [[ ", v.title, " ]]");
+    if e != nil {
+        t.Error("Error while parsing", e.Error())
+    }
+
+    if v.Title != "dive into mark" {
+        t.Errorf("Expected \"dive into mark\", got [[ %s ]]", v.Title);
     }
 }
 
+func TestCanParseUpdated(t *testing.T) {
+    r:= strings.NewReader(feed)
+    v, e := ParseFeed(r)
+
+    if e != nil {
+        t.Error("Error while parsing", e.Error())
+    }
+
+    if v.Updated.UnixNano() != 1122812969000000000 {
+        t.Errorf("Expected time for 1122812969000000000, got [[ %s ]]", v.Updated.UnixNano());
+    }
+}
+
+func TestThrowsError(t * testing.T) {
+    r:= strings.NewReader("invalid feed")
+    _, e := ParseFeed(r)
+
+    if e == nil {
+        t.Error("Didn't encounter error when parsing")
+    }
+}
