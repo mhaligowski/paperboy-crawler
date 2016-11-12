@@ -4,6 +4,9 @@ service: crawler
 handlers:
     - url: /ping
       script: _go_app
+    - url: /handle
+      script: _go_app
+
 
 
 
