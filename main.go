@@ -12,6 +12,7 @@ func handlePing(w http.ResponseWriter, r *http.Request) {
 
 func handleRequest(w http.ResponseWriter, r *http.Request) {
     type Input struct {
+        FeedId string `json:"feed_id"`
         FeedUrl string `json:"feed_url"`
     }
 
