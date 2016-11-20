@@ -7,6 +7,8 @@ import (
 
     "google.golang.org/appengine"
     "google.golang.org/appengine/urlfetch"
+
+    "parser"
 )
 
 func handlePing(w http.ResponseWriter, r *http.Request) {
@@ -26,23 +28,35 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 
     input, err := parseInput(r); if err != nil {
         http.Error(w, err.Error(), http.StatusBadRequest)
-    }
-
-    ctx := appengine.NewContext(r)
-    client := urlfetch.Client(ctx)
-    response, err := client.Get(input.FeedUrl); if err != nil {
-        http.Error(w, err.Error(), http.StatusNotFound)
         return
     }
 
-    defer response.Body.Close()
-    body, err := ioutil.ReadAll(response.Body); if err != nil {
+    body, err := fetchFeed(r, input.FeedUrl); if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
 
-    fmt.Fprintf(w, "%q", body)
+    _, err = parser.ParseFeedFromBytes(body); if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
 
+    w.WriteHeader(http.StatusNoContent)
+}
+
+func fetchFeed(r *http.Request, feedUrl string) ([]byte, error) {
+    ctx := appengine.NewContext(r)
+    client := urlfetch.Client(ctx)
+    response, err := client.Get(feedUrl); if err != nil {
+        return nil, err
+    }
+
+    defer response.Body.Close()
+    body, err := ioutil.ReadAll(response.Body); if err != nil {
+        return nil, err
+    }
+
+    return body, nil
 }
 
 func parseInput(r *http.Request) (i input, err error) {
