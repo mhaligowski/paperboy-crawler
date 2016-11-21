@@ -1,8 +1,8 @@
-package parser
+package crawler
 
 import (
-    "testing"
-    "strings"
+	"strings"
+	"testing"
 )
 
 const feed = `
@@ -47,36 +47,36 @@ const feed = `
 `
 
 func TestCanParseTitle(t *testing.T) {
-    r:= strings.NewReader(feed)
-    v, e := ParseFeed(r)
+	r := strings.NewReader(feed)
+	v, e := ParseFeed(r)
 
-    if e != nil {
-        t.Error("Error while parsing", e.Error())
-    }
+	if e != nil {
+		t.Error("Error while parsing", e.Error())
+	}
 
-    if v.Title != "dive into mark" {
-        t.Errorf("Expected \"dive into mark\", got [[ %s ]]", v.Title);
-    }
+	if v.Title != "dive into mark" {
+		t.Errorf("Expected \"dive into mark\", got [[ %s ]]", v.Title)
+	}
 }
 
 func TestCanParseUpdated(t *testing.T) {
-    r:= strings.NewReader(feed)
-    v, e := ParseFeed(r)
+	r := strings.NewReader(feed)
+	v, e := ParseFeed(r)
 
-    if e != nil {
-        t.Error("Error while parsing", e.Error())
-    }
+	if e != nil {
+		t.Error("Error while parsing", e.Error())
+	}
 
-    if v.Updated.UnixNano() != 1122812969000000000 {
-        t.Errorf("Expected time for 1122812969000000000, got [[ %s ]]", v.Updated.UnixNano());
-    }
+	if v.Updated.UnixNano() != 1122812969000000000 {
+		t.Errorf("Expected time for 1122812969000000000, got [[ %s ]]", v.Updated.UnixNano())
+	}
 }
 
-func TestThrowsError(t * testing.T) {
-    r:= strings.NewReader("invalid feed")
-    _, e := ParseFeed(r)
+func TestThrowsError(t *testing.T) {
+	r := strings.NewReader("invalid feed")
+	_, e := ParseFeed(r)
 
-    if e == nil {
-        t.Error("Didn't encounter error when parsing")
-    }
+	if e == nil {
+		t.Error("Didn't encounter error when parsing")
+	}
 }
