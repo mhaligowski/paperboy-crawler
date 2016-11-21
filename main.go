@@ -6,6 +6,7 @@ import (
 
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/urlfetch"
+	"fmt"
 )
 
 type input struct {
@@ -37,12 +38,20 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Fprint(w, "%v\n", len(feed.Entries))
 	ctx := appengine.NewContext(r)
 	for _, entry := range feed.Entries {
-		AddEntryIfDoesntExist(ctx, &entry)
+		entry.Summary = entry.Summary[:1500]
+
+		_, _, err := AddEntryIfDoesntExist(ctx, &entry)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		fmt.Fprint(w, "%v\n", entry.Title)
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	w.WriteHeader(http.StatusOK)
 }
 
 func fetchFeed(r *http.Request, feedUrl string) ([]byte, error) {

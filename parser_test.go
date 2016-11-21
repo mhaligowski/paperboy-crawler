@@ -80,3 +80,12 @@ func TestThrowsError(t *testing.T) {
 		t.Error("Didn't encounter error when parsing")
 	}
 }
+
+func TestEntriesAreFilled(t *testing.T) {
+	r := strings.NewReader(feed)
+	v, _ := ParseFeed(r)
+
+	if len(v.Entries) == 0 {
+		t.Errorf("Expected number of entries to be 1, got [[ %v ]]", len(v.Entries))
+	}
+}

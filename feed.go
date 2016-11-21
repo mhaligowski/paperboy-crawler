@@ -20,5 +20,5 @@ type Feed struct {
 	Title   string    `xml:"title"`
 	Updated time.Time `xml:"updated"`
 
-	Entries []Entry `xml:"Entry"`
+	Entries []Entry `xml:"entry"`
 }

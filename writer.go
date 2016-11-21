@@ -14,17 +14,15 @@ func AddEntryIfDoesntExist(ctx context.Context, entry *Entry) (*Entry, bool, err
 
 	if e != nil && e != datastore.ErrNoSuchEntity {
 		return nil, false, e
-	}
+	} else if e == datastore.ErrNoSuchEntity {
+		_, e = datastore.Put(ctx, key, entry)
 
-	if e == datastore.ErrNoSuchEntity {
-		return dsEntry, false, nil
-	}
-
-	_, e = datastore.Put(ctx, key, entry)
-
-	if e != nil {
-		return nil, false, e
+		if e != nil {
+			return nil, false, e
+		} else {
+			return dsEntry, true, nil
+		}
 	} else {
-		return dsEntry, true, nil
+		return dsEntry, false, nil
 	}
 }
