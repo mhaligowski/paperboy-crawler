@@ -5,15 +5,8 @@ import (
 	"google.golang.org/appengine/datastore"
 	"github.com/nu7hatch/gouuid"
 	"time"
+	"github.com/mhaligowski/streams"
 )
-
-type StreamItem struct {
-	StreamItemId string `datastore:"id"`;
-	UserId string `datastore:"user_id"`;
-	TargetId string `dataastore:"target_id"`;
-	Title string `datastore:"title"`;
-	OrderSequence int64 `datastore:"order_sequence"`;
-}
 
 func AddEntryIfDoesntExist(ctx context.Context, entry Entry) (*Entry, bool, error) {
 	var dsEntry = &Entry{}
@@ -45,7 +38,7 @@ func PutStreamEntry(ctx context.Context, entry Entry, userId string) (string, er
 
 	key := datastore.NewKey(ctx, "StreamItem", keyValue.String(), 0, nil)
 
-	item := StreamItem{
+	item := streams.StreamItem{
 		Title: entry.Title,
 		OrderSequence: time.Now().UnixNano(),
 		StreamItemId:keyValue.String(),
