@@ -5,7 +5,7 @@ import (
 	"google.golang.org/appengine/datastore"
 	"github.com/nu7hatch/gouuid"
 	"time"
-	"github.com/mhaligowski/streams"
+	"github.com/mhaligowski/paperboy-streams"
 )
 
 func AddEntryIfDoesntExist(ctx context.Context, entry Entry) (*Entry, bool, error) {
