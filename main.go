@@ -45,21 +45,11 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 	for _, entry := range feed.Entries {
 		entry.Summary = entry.Summary[:1500]
 
-		_, created, err := AddEntryIfDoesntExist(ctx, entry)
+		_, _, err := addEntryIfDoesntExist(ctx, entry)
 		if err != nil {
 			log.Errorf(ctx, "could not put feed entry %s from feed %s: %v", entry.Id, feed.Id, err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
-		}
-
-		if created {
-			log.Debugf(ctx, "new entry created, writing to the stream")
-			_, err := PutStreamEntry(ctx, entry, "dummy_user_id")
-			if err != nil {
-				log.Errorf(ctx, "could not write new stream item: %v", err)
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
 		}
 	}
 

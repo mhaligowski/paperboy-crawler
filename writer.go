@@ -3,16 +3,12 @@ package crawler
 import (
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/datastore"
-	"github.com/nu7hatch/gouuid"
-	"time"
-	"github.com/mhaligowski/paperboy-streams"
 )
 
-func AddEntryIfDoesntExist(ctx context.Context, entry Entry) (*Entry, bool, error) {
+func addEntryIfDoesntExist(ctx context.Context, entry Entry) (*Entry, bool, error) {
 	var dsEntry = &Entry{}
 
 	key := datastore.NewKey(ctx, "Entry", entry.Id, 0, nil)
-
 	e := datastore.Get(ctx, key, dsEntry)
 
 	if e != nil && e != datastore.ErrNoSuchEntity {
@@ -28,24 +24,4 @@ func AddEntryIfDoesntExist(ctx context.Context, entry Entry) (*Entry, bool, erro
 	} else {
 		return dsEntry, false, nil
 	}
-}
-
-func PutStreamEntry(ctx context.Context, entry Entry, userId string) (string, error) {
-	keyValue, err := uuid.NewV4();
-	if err != nil {
-		return "", err;
-	}
-
-	key := datastore.NewKey(ctx, "StreamItem", keyValue.String(), 0, nil)
-
-	item := streams.StreamItem{
-		Title: entry.Title,
-		OrderSequence: time.Now().UnixNano(),
-		StreamItemId:keyValue.String(),
-		TargetId:entry.Id,
-		UserId:userId,
-	}
-
-	k, err := datastore.Put(ctx, key, &item)
-	return k.String(), err
 }
