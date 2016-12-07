@@ -6,6 +6,7 @@ import (
 
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/taskqueue"
+	"encoding/json"
 )
 
 type input struct {
@@ -40,13 +41,16 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 	}
 	feed.Entries = newEntries
 
-	// build task
+	body, err := json.Marshal(feed)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	task := taskqueue.NewPOSTTask("/jobs", url.Values{})
 	task.Header.Set("Content-Type", "application/json")
+	task.Payload(body)
 
-	// build json out of
-
-	// write tast to queue
 	taskqueue.Add(ctx, task, "StreamUpdates")
 
 	w.WriteHeader(http.StatusOK)
