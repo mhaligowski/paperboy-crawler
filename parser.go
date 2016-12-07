@@ -7,13 +7,13 @@ import (
 	"io"
 )
 
-func ParseFeedFromBytes(data []byte) (*Feed, error) {
+func parseFeedFromBytes(data []byte) (*Feed, error) {
 	reader := bytes.NewReader(data)
 
-	return ParseFeed(reader)
+	return parseFeed(reader)
 }
 
-func ParseFeed(r io.Reader) (*Feed, error) {
+func parseFeed(r io.Reader) (*Feed, error) {
 	d := xml.NewDecoder(r)
 	d.CharsetReader = charset.NewReaderLabel
 

@@ -48,7 +48,7 @@ const feed = `
 
 func TestCanParseTitle(t *testing.T) {
 	r := strings.NewReader(feed)
-	v, e := ParseFeed(r)
+	v, e := parseFeed(r)
 
 	if e != nil {
 		t.Error("Error while parsing", e.Error())
@@ -61,20 +61,20 @@ func TestCanParseTitle(t *testing.T) {
 
 func TestCanParseUpdated(t *testing.T) {
 	r := strings.NewReader(feed)
-	v, e := ParseFeed(r)
+	v, e := parseFeed(r)
 
 	if e != nil {
 		t.Error("Error while parsing", e.Error())
 	}
 
 	if v.Updated.UnixNano() != 1122812969000000000 {
-		t.Errorf("Expected time for 1122812969000000000, got [[ %s ]]", v.Updated.UnixNano())
+		t.Errorf("Expected time for 1122812969000000000, got [[ %v ]]", v.Updated.UnixNano())
 	}
 }
 
 func TestThrowsError(t *testing.T) {
 	r := strings.NewReader("invalid feed")
-	_, e := ParseFeed(r)
+	_, e := parseFeed(r)
 
 	if e == nil {
 		t.Error("Didn't encounter error when parsing")
@@ -83,7 +83,7 @@ func TestThrowsError(t *testing.T) {
 
 func TestEntriesAreFilled(t *testing.T) {
 	r := strings.NewReader(feed)
-	v, _ := ParseFeed(r)
+	v, _ := parseFeed(r)
 
 	if len(v.Entries) == 0 {
 		t.Errorf("Expected number of entries to be 1, got [[ %v ]]", len(v.Entries))

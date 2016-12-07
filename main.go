@@ -7,6 +7,7 @@ import (
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/urlfetch"
 	"google.golang.org/appengine/log"
+	"context"
 )
 
 type input struct {
@@ -28,49 +29,21 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	body, err := fetchFeed(r, input.FeedUrl)
+	feed, err := getFeed(ctx, input.FeedUrl)
 	if err != nil {
-		log.Errorf(ctx, "could not fetch feed %s: %v", input.FeedUrl, err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	feed, err := ParseFeedFromBytes(body)
+	newEntries, err := writeEntries(ctx, feed)
 	if err != nil {
-		log.Errorf(ctx, "could not parse feed %s, %v", input.FeedUrl, err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	feed.Entries = newEntries
 
-	for _, entry := range feed.Entries {
-		entry.Summary = entry.Summary[:1500]
-
-		_, _, err := addEntryIfDoesntExist(ctx, entry)
-		if err != nil {
-			log.Errorf(ctx, "could not put feed entry %s from feed %s: %v", entry.Id, feed.Id, err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-	}
-
+	// write entries to the queue
 	w.WriteHeader(http.StatusOK)
-}
-
-func fetchFeed(r *http.Request, feedUrl string) ([]byte, error) {
-	ctx := appengine.NewContext(r)
-	client := urlfetch.Client(ctx)
-	response, err := client.Get(feedUrl)
-	if err != nil {
-		return nil, err
-	}
-
-	defer response.Body.Close()
-	body, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	return body, nil
 }
 
 func parseInput(r *http.Request) (input, error) {
@@ -83,3 +56,4 @@ func parseInput(r *http.Request) (input, error) {
 func init() {
 	http.HandleFunc("/handle", handleRequest)
 }
+
