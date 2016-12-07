@@ -1,13 +1,11 @@
 package crawler
 
 import (
-	"io/ioutil"
 	"net/http"
+	"net/url"
 
 	"google.golang.org/appengine"
-	"google.golang.org/appengine/urlfetch"
-	"google.golang.org/appengine/log"
-	"context"
+	"google.golang.org/appengine/taskqueue"
 )
 
 type input struct {
@@ -42,7 +40,15 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 	}
 	feed.Entries = newEntries
 
-	// write entries to the queue
+	// build task
+	task := taskqueue.NewPOSTTask("/jobs", url.Values{})
+	task.Header.Set("Content-Type", "application/json")
+
+	// build json out of
+
+	// write tast to queue
+	taskqueue.Add(ctx, task, "StreamUpdates")
+
 	w.WriteHeader(http.StatusOK)
 }
 
