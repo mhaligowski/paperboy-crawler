@@ -1,7 +1,7 @@
 package crawler
 
 import (
-	"context"
+	"golang.org/x/net/context"
 	"encoding/xml"
 	"io/ioutil"
 	"time"
