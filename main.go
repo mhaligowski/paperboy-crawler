@@ -49,7 +49,7 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 
 	task := taskqueue.NewPOSTTask("/jobs", url.Values{})
 	task.Header.Set("Content-Type", "application/json")
-	task.Payload(body)
+	task.Payload = body
 
 	taskqueue.Add(ctx, task, "StreamUpdates")
 
