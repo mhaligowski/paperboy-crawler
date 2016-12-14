@@ -2,19 +2,15 @@ package crawler
 
 import (
 	"encoding/json"
-
 	"net/http"
 	"net/url"
+
+	"github.com/mhaligowski/paperboy-feeds"
 
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/taskqueue"
 	"google.golang.org/appengine/log"
 )
-
-type input struct {
-	FeedId  string
-	FeedUrl string
-}
 
 func handleRequest(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
@@ -24,13 +20,14 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	input, err := parseInput(r)
+	input := &feeds.Feed{}
+	err := json.NewDecoder(r.Body).Decode(input)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	feed, err := getFeed(ctx, input.FeedUrl)
+	feed, err := getFeed(ctx, input.Url)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -57,13 +54,6 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 	taskqueue.Add(ctx, task, "StreamUpdates")
 
 	w.WriteHeader(http.StatusOK)
-}
-
-func parseInput(r *http.Request) (input, error) {
-	feed_id := r.FormValue("feed_id")
-	feed_url := r.FormValue("feed_url")
-
-	return input{feed_id, feed_url}, nil
 }
 
 func init() {
