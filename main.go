@@ -5,12 +5,17 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/mhaligowski/paperboy-feeds"
-
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/taskqueue"
 	"google.golang.org/appengine/log"
+
+	"github.com/mhaligowski/paperboy-feeds"
 )
+
+type StreamUpdate struct {
+	*feeds.Feed
+	Entries []Entry
+}
 
 func handleRequest(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
@@ -38,9 +43,9 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	feed.Entries = newEntries
+	update := StreamUpdate{input, newEntries}
 
-	body, err := json.Marshal(feed)
+	body, err := json.Marshal(update)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
