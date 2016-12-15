@@ -4,12 +4,10 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/url"
-
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/taskqueue"
 	"google.golang.org/appengine/log"
-
-	feeds "github.com/mhaligowski/paperboy-feeds/model"
+	"github.com/mhaligowski/paperboy-feeds"
 )
 
 type StreamUpdate struct {
