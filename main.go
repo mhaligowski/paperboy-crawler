@@ -9,7 +9,7 @@ import (
 	"google.golang.org/appengine/taskqueue"
 	"google.golang.org/appengine/log"
 
-	"github.com/mhaligowski/paperboy-feeds"
+	feeds "github.com/mhaligowski/paperboy-feeds/model"
 )
 
 type StreamUpdate struct {
@@ -17,7 +17,7 @@ type StreamUpdate struct {
 	Entries []Entry
 }
 
-func handleRequest(w http.ResponseWriter, r *http.Request) {
+func HandleRequest(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
 
 	if r.Method != http.MethodPost {
@@ -59,9 +59,5 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 	taskqueue.Add(ctx, task, "StreamUpdates")
 
 	w.WriteHeader(http.StatusOK)
-}
-
-func init() {
-	http.HandleFunc("/handle", handleRequest)
 }
 

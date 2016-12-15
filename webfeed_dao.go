@@ -2,31 +2,11 @@ package crawler
 
 import (
 	"golang.org/x/net/context"
-	"encoding/xml"
 	"io/ioutil"
-	"time"
 
 	"google.golang.org/appengine/log"
 	"google.golang.org/appengine/urlfetch"
 )
-
-type Entry struct {
-	Id      string    `xml:"id" json:"id"`
-	Title   string    `xml:"title" json:"title"`
-	Updated time.Time `xml:"updated" json:"updated"`
-	Content string    `xml:"content" json:"content"`
-	Summary string    `xml:"summary" json:"summary"`
-}
-
-type Feed struct {
-	XMLName xml.Name `xml:"feed" json:"-"`
-
-	Id      string    `xml:"id" json:"id"`
-	Title   string    `xml:"title" json:"title"`
-	Updated time.Time `xml:"updated" json:"updated"`
-
-	Entries []Entry   `xml:"entry" json:"entries"`
-}
 
 func fetchFeed(ctx context.Context, feedUrl string) ([]byte, error) {
 	client := urlfetch.Client(ctx)
@@ -44,7 +24,7 @@ func fetchFeed(ctx context.Context, feedUrl string) ([]byte, error) {
 	return body, nil
 }
 
-func getFeed(ctx context.Context, url string) (*Feed, error) {
+func getFeed(ctx context.Context, url string) (*WebFeed, error) {
 	content, err := fetchFeed(ctx, url)
 
 	if err != nil {

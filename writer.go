@@ -28,7 +28,7 @@ func addEntryIfDoesntExist(ctx context.Context, entry Entry) (*Entry, bool, erro
 	}
 }
 
-func writeEntries(ctx context.Context, feed *Feed) ([]Entry, error) {
+func writeEntries(ctx context.Context, feed *WebFeed) ([]Entry, error) {
 	newEntries := make([]Entry, 0, len(feed.Entries))
 	for _, entry := range feed.Entries {
 		entry.Summary = entry.Summary[:1500]
